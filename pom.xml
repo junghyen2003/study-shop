@@ -33,6 +33,8 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<!-- H2-Hibernate 버그로 인한 버전 지정-->
+			<version>1.4.199</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
