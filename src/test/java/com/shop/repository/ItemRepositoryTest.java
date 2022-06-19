@@ -1,13 +1,18 @@
 package com.shop.repository;
 
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.shop.constant.ItemSellStatus;
 import com.shop.entity.Item;
+import com.shop.entity.QItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +25,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource(locations="classpath:application-test.properties")
 // 테스트 코드 실행 시 application.properties에 설정해둔 값보다 application-test.properties에 같은 설정이 있다면 더 높은 우선 순위를 부여
 class ItemRepositoryTest {
+
+    @PersistenceContext
+    EntityManager em;
+    // 영속성 컨텍스트를 사용하기 위해 @PersistenceContext 어노테이션을 이용해 EntityManager 빈을 주입
 
     @Autowired
     ItemRepository itemRepository;
@@ -100,6 +109,30 @@ class ItemRepositoryTest {
     public void findByItemDetailByNativeTest() {
         this.createItemList();
         List<Item> itemList = itemRepository.findByItemDetailByNative("테스트 상품 상세 설명");
+        for(Item item : itemList) {
+            System.out.println(item.toString());
+        }
+    }
+
+    @Test
+    @DisplayName("Querydsl 조회 테스트1")
+    public void queryDslTest() {
+        this.createItemList();
+
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        // JPAQueryFactory를 이용하여 쿼리를 동적으로 생성. 생성자의 파라미터로는 EntityManager 객체를 전달.
+
+        QItem qItem = QItem.item;
+        // Querydsl을 통해 쿼리를 생성하기 위해 플러그인을 통해 자동으로 생성된 QItem 객체를 이용합니다.
+
+        JPAQuery<Item> query = queryFactory.selectFrom(qItem)
+                .where(qItem.itemSellStatus.eq(ItemSellStatus.SELL))
+                .where(qItem.itemDetail.like("%" + "테스트 상품 상세 설명" + "%"))
+                .orderBy(qItem.price.desc());
+
+        // fetch 메소드 실행 시점에 쿼리문이 실행
+        List<Item> itemList = query.fetch();
+
         for(Item item : itemList) {
             System.out.println(item.toString());
         }
