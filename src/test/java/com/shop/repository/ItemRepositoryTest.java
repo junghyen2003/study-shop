@@ -1,5 +1,6 @@
 package com.shop.repository;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.shop.constant.ItemSellStatus;
@@ -9,7 +10,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
+import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -130,11 +135,72 @@ class ItemRepositoryTest {
                 .where(qItem.itemDetail.like("%" + "테스트 상품 상세 설명" + "%"))
                 .orderBy(qItem.price.desc());
 
-        // fetch 메소드 실행 시점에 쿼리문이 실행
         List<Item> itemList = query.fetch();
+        // fetch 메소드 실행 시점에 쿼리문이 실행
 
         for(Item item : itemList) {
             System.out.println(item.toString());
+        }
+    }
+
+    public void createItemList2() {
+        for (int i = 1; i <= 5; i++) {
+            Item item = new Item();
+            item.setItemNm("테스트 상품" + i);
+            item.setPrice(10000 + i);
+            item.setItemDetail("테스트 상품 상세 설명" + i);
+            item.setItemSellStatus(ItemSellStatus.SELL);
+            item.setStockNumber(100);
+            item.setRegTime(LocalDateTime.now());
+            item.setUpdateTime(LocalDateTime.now());
+            itemRepository.save(item);
+        }
+
+        for (int i = 6; i < 10; i++) {
+            Item item = new Item();
+            item.setItemNm("테스트 상품" + i);
+            item.setPrice(10000 + i);
+            item.setItemDetail("테스트 상품 상세 설명" + i);
+            item.setItemSellStatus(ItemSellStatus.SOLD_OUT);
+            item.setStockNumber(0);
+            item.setRegTime(LocalDateTime.now());
+            item.setUpdateTime(LocalDateTime.now());
+            itemRepository.save(item);
+        }
+    }
+
+    @Test
+    @DisplayName("상품 Querydsl 조회 테스트 2")
+    public void queryDslTest2() {
+
+        this.createItemList2();
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        // 쿼리에 들어갈 조건을 만들어주는 빌더. Predicate를 구현하고 있으며 메소드 체인 형식으로 사용 가능.
+
+        QItem item = QItem.item;
+
+        String itemDetail = "테스트 상품 상세 설명";
+        int price = 10003;
+        String itemSellStat = "SELL";
+
+        booleanBuilder.and(item.itemDetail.like("%" + itemDetail + "%"));
+        booleanBuilder.and(item.price.gt(price));
+
+        if (StringUtils.equals(itemSellStat, ItemSellStatus.SELL)) {
+            booleanBuilder.and(item.itemSellStatus.eq(ItemSellStatus.SELL));
+        }
+
+        Pageable pageable = PageRequest.of(0, 5);
+        // 데이터를 페이징해 조회하도록 PageRequest.of() 메소드를 통해 Pageable 객체를 생성
+        // 첫 번째 인자는 조회할 페이지의 번호, 두 번째 인자는 한 페이지당 조회할 데이터의 개수
+
+        Page<Item> itemPagingResult = itemRepository.findAll(booleanBuilder, pageable);
+        System.out.println("totla elements : " + itemPagingResult.getTotalElements());
+
+        List<Item> resultItemList = itemPagingResult.getContent();
+        for (Item resultItem: resultItemList) {
+            System.out.println(resultItem.toString());
         }
     }
 }
