@@ -72,6 +72,10 @@
 			<!--Thymeleaf 의 페이지 레이아웃 기능을 사용하기 위한 의존성 추가-->
 			<version>2.5.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
