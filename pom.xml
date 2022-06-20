@@ -66,6 +66,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>nz.net.ultraq.thymeleaf</groupId>
+			<artifactId>thymeleaf-layout-dialect</artifactId>
+			<!--Thymeleaf 의 페이지 레이아웃 기능을 사용하기 위한 의존성 추가-->
+			<version>2.5.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
