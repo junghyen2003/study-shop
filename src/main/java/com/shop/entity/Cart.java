@@ -11,14 +11,14 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-public class Cart {
+public class Cart extends BaseEntity {
 
     @Id
     @Column(name = "cart_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     // 회원 엔티티와 일대일(단방향)로 매핑
     // 회원 엔티티에는 장바구니에 연관된 소스가 없음
     @JoinColumn(name = "member_id")

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class Item {
+public class Item extends BaseEntity {
 
     /**
      * 상품 코드
@@ -53,13 +53,4 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus;
 
-    /**
-     * 등록 시간
-     */
-    private LocalDateTime regTime;
-
-    /**
-     * 수정 시간
-     */
-    private LocalDateTime updateTime;
 }

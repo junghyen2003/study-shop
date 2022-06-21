@@ -14,14 +14,14 @@ import java.util.List;
 // 정렬 시 사용하는 키워드 "order"을 회피하기 위한 "orders"로 테이블 이름 변경
 @Getter
 @Setter
-public class Order {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue
     @Column(name = "order_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     // 한 명의 회원이 여러번 주문을 할 수 있으므로 주문 엔티티 기준에서 다대일(n:1) 단방향 매핑
     @JoinColumn(name = "member_id")
     private Member member;
@@ -37,7 +37,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     // 주문 상품 엔티티와 일대다 매핑
     // 외래키(order_id)가 order_item 테이블에 있으므로 연관관계의 주인은 OrderItem 엔티티
     // Order 엔티티가 주인이 아니므로 "mappedBy" 속성으로 연관 관계의 주인을 설정
@@ -48,7 +48,4 @@ public class Order {
     private List<OrderItem> orderItems = new ArrayList<>();
     // 하나의 주문이 여러 개의 주문 상품을 갖으므로 List 자료형을 사용해서 매핑
 
-    private LocalDateTime regTime;
-
-    private LocalDateTime updateTime;
 }
