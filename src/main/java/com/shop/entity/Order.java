@@ -37,12 +37,14 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     // 주문 상품 엔티티와 일대다 매핑
     // 외래키(order_id)가 order_item 테이블에 있으므로 연관관계의 주인은 OrderItem 엔티티
     // Order 엔티티가 주인이 아니므로 "mappedBy" 속성으로 연관 관계의 주인을 설정
     // mappedBy = "order" 속성 값의 의미는 OrderItem에 있는 Order에 의해 관리된다는 의미
     // 즉 연관 관계의 주인 필드인 order를 mappedBy의 값으로 세팅
+    // 부모 엔티티의 영속성 상태 변화를 자식 엔티티에 모두 전이하는 CascadeType.ALL 옵션 설정
+    // orphanRemoval = true 옵션을 통해 고아 객체 제거
     private List<OrderItem> orderItems = new ArrayList<>();
     // 하나의 주문이 여러 개의 주문 상품을 갖으므로 List 자료형을 사용해서 매핑
 
