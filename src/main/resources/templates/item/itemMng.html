@@ -47,6 +47,7 @@
         <td>상품아이디</td>
         <td>상품명</td>
         <td>상태</td>
+        <td>재고</td>
         <td>등록자</td>
         <td>등록일</td>
       </tr>
@@ -58,6 +59,7 @@
           <a th:href="'/admin/item/'+${item.id}" th:text="${item.itemNm}"></a>
         </td>
         <td th:text="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL} ? '판매중' : '품절'"></td>
+        <td th:text="${item.stockNumber}"></td>
         <td th:text="${item.createdBy}"></td>
         <td th:text="${item.regTime}"></td>
       </tr>
@@ -73,7 +75,7 @@
           </a>
         </li>
 
-        <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${items.number eq page-1}?'active':''">
+        <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${items.number eq (page - 1)}?'active':''">
           <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
         </li>
 
